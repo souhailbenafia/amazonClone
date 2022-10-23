@@ -2,35 +2,43 @@ import React, { useState } from 'react'
 import Image from 'next/image'
 import { StarIcon } from '@heroicons/react/solid';
 import Currency from 'react-currency-formatter'
+import { useDispatch } from 'react-redux';
+import { addToBasket } from '../slices/basketSlice';
 
 const MAX_RATING = 5
 const MIN_RATING = 1
 
-function Product({ id, title , price , description, category,  image }) {
-   const [rating, setrating] = useState(
+function Product({ id, title , price , description, category,  image
+ }) {
+   const [rating] = useState(
     Math.floor(Math.random()*(MAX_RATING - MIN_RATING +1 ) + MIN_RATING)
    );
-
+     const dispatch = useDispatch();
    const [hasPrime] = useState(Math.random()<0.5)
+
+   const addItemTobascket = () =>{
+         const product = { id, title , price , description, category,  image, hasPrime }
+         dispatch(addToBasket(product));
+   }
   return (
-    <div className='relative flex flex-col m-5 bg-white z-30 p-10'>
+    <div key={id} className='relative flex flex-col m-5 bg-white z-30 p-10'>
         <p className='absolute top-2 right-2 text-xs italic text-gray-400'>{category}</p>
         <Image src ={image} width={200} height={200} objectFit="contain" />
 
         <h4 className='my-3'>{title}</h4>
 
         <div className='flex'>
-            {Array(rating).fill().map((item,i)=>(
+            {Array(rating).fill().map((item,index)=>(
                 
-        <StarIcon className='h-5 text-yellow-500'/>
+        <StarIcon  key={index} className='h-5 text-yellow-500'/>
             ))}
-        </div>
+        </div>    
 
         {hasPrime && (<p> Has prime del</p>)}
 
-       <div>
+       
        <p className='text-xs my-2 line-clamp-2 '>{description}</p>
-       </div>
+    
 
         <div className='mb-5'>
            <Currency quantity={price} currency={"TND"} />  
@@ -44,7 +52,7 @@ function Product({ id, title , price , description, category,  image }) {
                 </div>
             )
         }
-        <button className='mt-auto button'>Add to Basket</button>
+        <button onClick={addItemTobascket} className='mt-auto button'>Add to Basket</button>
     </div>
   )
 }

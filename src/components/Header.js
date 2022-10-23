@@ -2,13 +2,25 @@ import Image from 'next/image'
 import React from 'react'
 
 import {MenuIcon, SearchIcon, ShoppingCartIcon} from "@heroicons/react/outline"
+import { useSession, signIn, signOut } from "next-auth/react"
+
+import {useRouter} from "next/router"
+import { useSelector } from 'react-redux'
+import { selectItems } from '../slices/basketSlice'
+
 
 function Header() {
+
+  const router = useRouter();
+  const { data: session } = useSession()
+
+  const items = useSelector(selectItems)
   return (
     <header >
        <div className='flex items-center bg-amazon_blue p-1 flew-grow py-2'>
         <div className="mt-2 flex items-center flex-grow sm:flex-grow-0">
             <Image 
+             onClick={() => router.push("/")}
             src="https://links.papareact.com/f90" 
             width={150}
             height={40}
@@ -23,16 +35,18 @@ function Header() {
           </div>
 
           <div className='text-white flex items-center text-xs space-x-6 mx-6 whitespace-nowrap '>
-            <div className="link ">
-            <p>Hello Souhail benafia</p>
+          
+            <div className="link cursor-pointer "
+             onClick={!session ? signIn : signOut}>
+            {session ? `Hello, ${session.user.name}` : "SignIn"}
             <p className='text-heade'>Account & List</p>
             </div>
             <div className="link ">
               <p>Returns</p>
               <p className='text-heade'>Orders</p>
             </div>
-            <div className=" relative link flex items-center ">
-               <span className='absolute top-0 right-0 md:right-10 h-4 w-4 bg-yellow-400 rounded-full text-center text-black font-bold '>0</span>
+            <div onClick={()=>router.push('/Checkout')} className=" relative link flex items-center ">
+               <span className='absolute top-0 right-0 md:right-10 h-4 w-4 bg-yellow-400 rounded-full text-center text-black font-bold '>{items.length}</span>
               <ShoppingCartIcon className='h-10'/>
               <p className= 'hidden md:inline text-heade mt-2 '>Basket</p>
             </div>
